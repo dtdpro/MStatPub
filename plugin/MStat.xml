@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<install version="1.5" type="plugin" group="content">
+	<name>MStat</name>
+	<author>DtD Productions</author>
+	<creationDate>2008.11.07</creationDate>
+	<copyright>(C) 2008 </copyright>
+	<license>http://www.gnu.org/licenses/gpl-2.0.html GNU/GPL</license>
+	<authorEmail>mike@ditzthedaisy.com</authorEmail>
+	<authorUrl>www.ditzthedaisy.com</authorUrl>
+	<version>1.0</version>
+	<description>MStat Plugin.</description>
+	<files>
+		<filename plugin="MStat">MStat.php</filename>
+	</files>
+	<install>
+		<sql>
+			<file driver="mysql">MStat.sql</file>
+		</sql>
+	</install>
+
+</install>
