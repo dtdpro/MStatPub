@@ -22,7 +22,7 @@ class  plgContentMStat extends JPlugin
 		$db =& JFactory::getDBO();
 		$q  = 'INSERT INTO #__mstat (mstat_user,mstat_article,mstat_cat,mstat_session,mstat_ipaddr) ';
 		$q .= 'VALUES ("'.$user->id.'","'.$article->id.'","'.$article->catid.'","'.$session->getId().'","'.$_SERVER['REMOTE_ADDR'].'")';
-		$db->setQuery( $query ); 
+		$db->setQuery( $q ); 
 		$db->query();
 		
 		return '';
@@ -30,5 +30,3 @@ class  plgContentMStat extends JPlugin
 }
 
 
-
-?>
