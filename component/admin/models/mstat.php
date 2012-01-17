@@ -1,127 +1,113 @@
 <?php
-/**
- * Hellos Model for Hello World Component
- * 
- * @package    Joomla.Tutorials
- * @subpackage Components
- * @link http://dev.joomla.org/component/option,com_jd-wiki/Itemid,31/id,tutorials:components/
- * @license		GNU/GPL
- */
 
 // Check to ensure this file is included in Joomla!
 defined('_JEXEC') or die();
 
-jimport( 'joomla.application.component.model' );
+jimport('joomla.application.component.modellist');
 
-/**
- * Hello Model
- *
- * @package    Joomla.Tutorials
- * @subpackage Components
- */
-class MStatModelMStat extends JModel
+class MStatModelMStat extends JModelList
 {
 
-	var $_data;
-	var $_total = null;
-	var $_pagination = null;
-
-	function __construct()
+	public function __construct($config = array())
 	{
-		parent::__construct();
-
-		global $mainframe, $context;
+		if (empty($config['filter_fields'])) {
+			$config['filter_fields'] = array();
+		}
+		parent::__construct($config);
+	}
 		
-		$limit			= $mainframe->getUserStateFromRequest( $context.'limit', 'limit', $mainframe->getCfg('list_limit'), 0);
-		$limitstart = $mainframe->getUserStateFromRequest( $context.'limitstart', 'limitstart', 0 );
-		$this->setState('limit', $limit);
-		$this->setState('limitstart', $limitstart);
-
+	protected function populateState($ordering = null, $direction = null)
+	{
+		// Initialise variables.
+		$app = JFactory::getApplication('administrator');
+		
+		// Load the filter state.
+		$startdate		= $this->getUserStateFromRequest( $this->context.'.startdate','startdate',date("Y-m-d",strtotime("-1 months") ));
+		$enddate		= $this->getUserStateFromRequest( $this->context.'.enddate','enddate',date("Y-m-d") );
+		$filter_cat 	= $this->getUserStateFromRequest( $this->context.'.filter_cat','filter_cat', 'filter_cat', 0 );
+		
+		$this->setState('startdate', $startdate);
+		$this->setState('enddate', $enddate);
+		$this->setState('filter_cat', $filter_cat);
+		
+		// Load the parameters.
+		$params = JComponentHelper::getParams('com_mstat');
+		$this->setState('params', $params);
+		
+		// List state information.
+		parent::populateState('s.mstat_time', 'desc');
 	}
 
-	function _buildQuery()
+	protected function getListQuery()
 	{
-		$user = JRequest::getVar('filter_user');
-		$session = JRequest::getVar('filter_session');
-		$month = JRequest::getVar('filter_month');
-		$year = JRequest::getVar('filter_year');
-		$cat = JRequest::getVar('filter_cat');
-		$article = JRequest::getVar('filter_article');
-		$tand = 0;
+		// Create a new query object.
+		$db = JFactory::getDBO();
+		$q = $db->getQuery(true);
 		
-		$q  = 'SELECT s.*,c.title,u.username,CONCAT(sc.title," - ",ca.title) as sctitle FROM #__mstat as s ';
-		$q .= 'LEFT JOIN #__content as c ON s.mstat_article = c.id ';
-		$q .= 'LEFT JOIN #__users as u ON s.mstat_user = u.id ';
-		$q .= 'LEFT JOIN #__categories as ca ON c.catid = ca.id ';
-		$q .= 'LEFT JOIN #__sections as sc ON ca.section = sc.id ';
-		if ($user || $session || $month || $year || $cat || $article) $q .= ' WHERE ';
-		if ($user) { $q .= 's.mstat_user = "'.$user.'"'; $tand = 1; }
-		if ($session) { if ($tand) { $q .= ' && '; $tand = 0; } $q .= ' s.mstat_session = "'.$session.'"'; $tand = 1; }
-		if ($month) { if ($tand) { $q .= ' && '; $tand = 0; } $q .= ' MONTH(s.mstat_time) = "'.$month.'"'; $tand = 1; }
-		if ($year) { if ($tand) { $q .= ' && '; $tand = 0; } $q .= ' YEAR(s.mstat_time) = "'.$year.'"'; $tand = 1; }
-		if ($cat) { if ($tand) { $q .= ' && '; $tand = 0; } $q .= ' s.mstat_cat = "'.$cat.'"'; $tand = 1; }
-		if ($article) { if ($tand) { $q .= ' && '; $tand = 0; } $q .= ' s.mstat_article = "'.$article.'"'; $tand = 1; }
-		$q .= ' ORDER BY s.mstat_time DESC';
+		$startdate = $this->getState('startdate');
+		$enddate = $this->getState('enddate');
+		$filter_cat = $this->getState('filter_cat');
+		
+		$q->select('s.*');
+		$q->from('#__mstat as s');
+		
+		$q->select('c.title');
+		$q->join('LEFT', '#__content as c ON s.mstat_article = c.id');
+		
+		$q->select('ca.title as cat_title');
+		$q->join('LEFT', '#__categories AS ca ON c.catid = ca.id');
+		
+		$q->where('date(s.mstat_time) BETWEEN "'.$startdate.'" AND "'.$enddate.'"');
+		
+		if (is_numeric($filter_cat)) {
+			$cat_tbl = JTable::getInstance('Category', 'JTable');
+			$cat_tbl->load($filter_cat);
+			$rgt = $cat_tbl->rgt;
+			$lft = $cat_tbl->lft;
+			$baselevel = (int) $cat_tbl->level;
+			$q->where('ca.lft >= '.(int) $lft);
+			$q->where('ca.rgt <= '.(int) $rgt);
+		}
+		
+		$orderCol = $this->state->get('list.ordering');
+		$orderDirn = $this->state->get('list.direction');
+		
+		if ($orderCol == 'l.ordering') {
+			$orderCol = 'category_name '.$orderDirn.', l.ordering';
+		}
+		
+		$q->order($db->getEscaped($orderCol.' '.$orderDirn));
 
 		return $q;
 	}
-
-	function getData()
-	{
-		if (empty( $this->_data ))
-		{
-			$query = $this->_buildQuery();
-			$this->_data = $this->_getList($query, $this->getState('limitstart'), $this->getState('limit'));
-		}
-
-		return $this->_data;
-	}
-	function getDataCSV()
-	{
-		if (empty( $this->_data ))
-		{
-			$query = $this->_buildQuery();
-			$this->_data = $this->_getList($query);
-		}
-
-		return $this->_data;
-	}
-
-
-	function getTotal()
-	{
-		if (empty($this->_total))
-		{
-			$query = $this->_buildQuery();
-			$this->_total = $this->_getListCount($query);
-		}
-
-		return $this->_total;
-	}
 	
-	function getPagination()
+	public function getItemsCSV()
 	{
-		if (empty($this->_pagination))
+		// Get a storage key.
+		$store = $this->getStoreId();
+		
+		// Try to load the data from internal storage.
+		if (isset($this->cache[$store]))
 		{
-			jimport('joomla.html.pagination');
-			$this->_pagination = new JPagination( $this->getTotal(), $this->getState('limitstart'), $this->getState('limit') );
+			return $this->cache[$store];
 		}
-
-		return $this->_pagination;
+		
+		// Load the list items.
+		$query = $this->_getListQuery();
+		$items = $this->_getList($query);
+		
+		// Check for a database error.
+		if ($this->_db->getErrorNum())
+		{
+			$this->setError($this->_db->getErrorMsg());
+			return false;
+		}
+		
+		// Add the items to the internal cache.
+		$this->cache[$store] = $items;
+		
+		return $this->cache[$store];
 	}
-	function getCatList() {
-		$db =& JFactory::getDBO();
-		$query  = ' SELECT *,c.id as catid,CONCAT(s.title," - ",c.title) as sctitle FROM #__categories as c ';
-		$query .= ' RIGHT JOIN #__sections as s ON c.section = s.id ';
-		$query .= 'ORDER BY s.title, c.title ASC';
-		$db->setQuery( $query );
-		$catlist = $db->loadObjectList();
-		$cats[]=JHTML::_('select.option','','--All--');
-		foreach ($catlist as $cl) {
-			$cats[]=JHTML::_('select.option',$cl->catid,$cl->sctitle);
-		}
-		return $cats;
+
 	
-	}
-
 }

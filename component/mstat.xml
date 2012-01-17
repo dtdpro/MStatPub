@@ -1,13 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE install SYSTEM "http://dev.joomla.org/xml/1.5/component-install.dtd">
-<install type="component" version="1.5.0">
+<extension type="component" version="1.7" method="upgrade">
 	<name>MStat</name>
 	<!-- The following elements are optional and free of formatting conttraints -->
 	<creationDate>2008</creationDate>
 	<author>DtDPro</author>
 	<authorEmail>joomla@dtdpro.com</authorEmail>
 	<authorUrl>http://www.dtdpro.com</authorUrl>
-	<copyright>2008-2010</copyright>
+	<copyright>2008-2012</copyright>
 	<license>GPL v2</license>
 	<!--  The version string is recorded in the components table -->
 	<version>0.5</version>
@@ -21,22 +20,18 @@
 	</install>
 	
 	<administration>
-		<!-- Administration Menu Section -->
 		<menu>MStat</menu>
 		
-		<!-- Administration Main File Copy Section -->
-		<!-- Note the folder attribute: This attribute describes the folder
-			to copy FROM in the package to install therefore files copied
-			in this section are copied from /admin/ in the package -->
 		<files folder="admin">
-	<!-- Site Main File Copy Section -->
 			<filename>index.html</filename>
 			<filename>controller.php</filename>
-			<filename>admin.mstat.php</filename>
+			<filename>mstat.php</filename>
 			<filename>install.sql</filename>
+			<filename>access.xml</filename>
+			<filename>config.xml</filename>
 			<folder>controllers</folder>
 			<folder>models</folder>
 			<folder>views</folder>
 		</files>		
 	</administration>
-</install>
+</extension>
