@@ -7,11 +7,11 @@ class MStatViewMStat extends JView
 {
 	function display($tpl = null)
 	{
-		JToolBarHelper::title(   JText::_( 'MStat Records' ), 'generic.png' );
+		JToolBarHelper::title(   JText::_( 'MStat Records' ), 'mstat' );
 		$model = $this->getModel();
 		$this->filtercat = $model->getState('filter_cat');
 		$tbar =& JToolBar::getInstance('toolbar');
-		$tbar->appendButton('Link','archive','Export CSV','index.php?option=com_mstat&controller=mstat&task=csvme&format=raw');
+		$tbar->appendButton('Link','archive','Export CSV','index.php?option=com_mstat&format=csv" target="_blank');
 		
 		$this->items = $this->get('Items');
 		$this->pagination = $this->get('Pagination');

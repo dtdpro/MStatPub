@@ -9,9 +9,9 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_mstat'))
 }
 
 //icon
-//$document = JFactory::getDocument();
-//$document->addStyleDeclaration('.icon-48-ContinuEd {background-image: url(../media/com_continued/images/continued-48x48.png);}');
-//$document->addStyleDeclaration('.icon-48-continued {background-image: url(../media/com_continued/images/continued-48x48.png);}');
+$document = JFactory::getDocument();
+$document->addStyleDeclaration('.icon-48-MStat {background-image: url(components/com_mstat/mstat-48x48.png);}');
+$document->addStyleDeclaration('.icon-48-mstat {background-image: url(components/com_mstat/mstat-48x48.png);}');
 
 
 // import joomla controller library

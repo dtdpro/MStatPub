@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="component" version="1.7" method="upgrade">
-	<name>MStat</name>
+	<name>com_mstat</name>
 	<!-- The following elements are optional and free of formatting conttraints -->
 	<creationDate>2008</creationDate>
 	<author>DtDPro</author>
@@ -9,7 +9,7 @@
 	<copyright>2008-2012</copyright>
 	<license>GPL v2</license>
 	<!--  The version string is recorded in the components table -->
-	<version>0.5</version>
+	<version>1.0</version>
 	<!-- The description is optional and defaults to the name -->
 	<description>Stats for com_content</description>
 
@@ -20,7 +20,7 @@
 	</install>
 	
 	<administration>
-		<menu>MStat</menu>
+		<menu img="components/com_mstat/mstat-16x16.png">COM_MSTAT_MENU</menu>
 		
 		<files folder="admin">
 			<filename>index.html</filename>
@@ -29,9 +29,15 @@
 			<filename>install.sql</filename>
 			<filename>access.xml</filename>
 			<filename>config.xml</filename>
+			<filename>mstat-48x48.png</filename>
+			<filename>mstat-16x16.png</filename>
 			<folder>controllers</folder>
 			<folder>models</folder>
 			<folder>views</folder>
-		</files>		
+		</files>	
+		<languages folder="admin">
+			<language tag="en-GB">language/en-GB.com_mstat.ini</language>
+			<language tag="en-GB">language/en-GB.com_mstat.sys.ini</language>
+		</languages>	
 	</administration>
 </extension>
