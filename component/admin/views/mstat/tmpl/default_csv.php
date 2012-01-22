@@ -3,7 +3,7 @@ defined('_JEXEC') or die('Restricted access');
 
 jimport( 'joomla.filesystem.file' );
 
-$path = JPATH_SITE.'/tmp/';
+$path = JPATH_SITE.'/cache/';
 $filename  =  'MStat_Report' . '-' . date("Y-m-d").'.csv';
 $model = $this->getModel('mstat');
 $items = $model->getItemsCSV();
@@ -26,4 +26,4 @@ for ($i=0, $n=count( $this->items ); $i < $n; $i++)
 JFile::write($path.$filename,$contents);
 
  $app = JFactory::getApplication();
- $app->redirect('../tmp/'.$filename);
+ $app->redirect('../cache/'.$filename);
