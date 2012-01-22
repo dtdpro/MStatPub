@@ -5,19 +5,24 @@
 	<creationDate>2008</creationDate>
 	<author>DtDPro</author>
 	<authorEmail>joomla@dtdpro.com</authorEmail>
-	<authorUrl>http://www.dtdpro.com</authorUrl>
+	<authorUrl>http://www.ditzthedaisy.com</authorUrl>
 	<copyright>2008-2012</copyright>
 	<license>GPL v2</license>
 	<!--  The version string is recorded in the components table -->
-	<version>1.0</version>
+	<version>1.1.0</version>
 	<!-- The description is optional and defaults to the name -->
 	<description>Stats for com_content</description>
 
 	<install>
 		<sql>
-			<file charset="utf8" driver="mysql">install.sql</file>
+			<file charset="utf8" driver="mysql">sql/install.sql</file>
 		</sql>
 	</install>
+	<update>
+		<schemas>
+			<schemapath type="mysql">sql/updates</schemapath>
+		</schemas>
+	</update>
 	
 	<administration>
 		<menu img="components/com_mstat/mstat-16x16.png">COM_MSTAT_MENU</menu>
@@ -26,7 +31,6 @@
 			<filename>index.html</filename>
 			<filename>controller.php</filename>
 			<filename>mstat.php</filename>
-			<filename>install.sql</filename>
 			<filename>access.xml</filename>
 			<filename>config.xml</filename>
 			<filename>mstat-48x48.png</filename>
@@ -34,10 +38,17 @@
 			<folder>controllers</folder>
 			<folder>models</folder>
 			<folder>views</folder>
+			<folder>sql</folder>
 		</files>	
 		<languages folder="admin">
 			<language tag="en-GB">language/en-GB.com_mstat.ini</language>
 			<language tag="en-GB">language/en-GB.com_mstat.sys.ini</language>
 		</languages>	
 	</administration>
+	
+	<!-- UPDATESERVER DEFINITION -->
+	<updateservers>
+		<!-- Note: No spaces or linebreaks allowed between the server tags -->
+		<server type="extension" priority="1" name="DtD Productions - MStat">http://update.ditzthedaisy.com/mstat-update.xml</server>
+	</updateservers>
 </extension>
