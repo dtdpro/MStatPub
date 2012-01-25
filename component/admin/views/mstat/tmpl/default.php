@@ -52,7 +52,6 @@ for ($y=2008; $y <= date("Y"); $y++) {$yearsl[] = JHTML::_('select.option',  $y,
 	{
 		$row = &$this->items[$i];
 		if ($row->mstat_user == 0) $row->username='Guest';
-		if (!$row->sctitle) $row->sctitle = 'Uncategorized';
 		
 		$userlink = $row->username;
 		$sessionlink = $row->mstat_session;
@@ -61,7 +60,7 @@ for ($y=2008; $y <= date("Y"); $y++) {$yearsl[] = JHTML::_('select.option',  $y,
 		<tr class="<?php echo "row$k"; ?>">
 			<td><?php echo $i + 1 + $this->pagination->limitstart; ?></td>
 			<td><?php echo $artlink; ?></td>
-			<td><?php echo $row->sctitle; ?></td>
+			<td><?php echo $row->cat_title; ?></td>
             <td><?php echo $row->mstat_time; ?></td>
 			<td><?php 
 				if ($row->mstat_user != 0) echo $userlink;
