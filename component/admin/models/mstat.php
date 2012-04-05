@@ -20,6 +20,8 @@ class MStatModelMStat extends JModelList
 	{
 		// Initialise variables.
 		$app = JFactory::getApplication('administrator');
+		$mstatConfig = JComponentHelper::getParams('com_mstat');
+		$cfg = $mstatConfig->toObject();
 		
 		// Load the filter state.
 		$startdate		= $this->getUserStateFromRequest( $this->context.'.startdate','startdate',date("Y-m-d",strtotime("-1 months") ));
@@ -29,6 +31,13 @@ class MStatModelMStat extends JModelList
 		$this->setState('startdate', $startdate);
 		$this->setState('enddate', $enddate);
 		$this->setState('filter_cat', $filter_cat);
+		
+		
+		//ContinuEd Link
+		if ($cfg->continued) {
+			$filter_group = $this->getUserStateFromRequest( $this->context.'.filter.group','filter_group', 0 );
+			$this->setState('filter.group', $filter_group);
+		}
 		
 		// Load the parameters.
 		$params = JComponentHelper::getParams('com_mstat');
@@ -40,6 +49,10 @@ class MStatModelMStat extends JModelList
 
 	protected function getListQuery()
 	{
+	
+		$mstatConfig = JComponentHelper::getParams('com_mstat');
+		$cfg = $mstatConfig->toObject();
+
 		// Create a new query object.
 		$db = JFactory::getDBO();
 		$q = $db->getQuery(true);
@@ -57,7 +70,21 @@ class MStatModelMStat extends JModelList
 		$q->select('ca.title as cat_title');
 		$q->join('LEFT', '#__categories AS ca ON c.catid = ca.id');
 		
+		$q->select('u.username,u.name,u.email');
+		$q->join('LEFT', '#__users AS u ON u.id = s.mstat_user');
+		
 		$q->where('date(s.mstat_time) BETWEEN "'.$startdate.'" AND "'.$enddate.'"');
+		
+		
+		if ($cfg->except_iplist) {
+			$iplist = explode(",",$cfg->except_iplist);
+			$q->where('s.mstat_ipaddr NOT IN ("'.implode('","',$iplist).'")');
+		}
+		
+		if ($cfg->except_userlist) {
+			$userlist = explode(",",$cfg->except_userlist);
+			$q->where('s.mstat_user NOT IN ("'.implode('","',$userlist).'")');
+		}
 		
 		if (is_numeric($filter_cat)) {
 			$cat_tbl = JTable::getInstance('Category', 'JTable');
@@ -67,6 +94,16 @@ class MStatModelMStat extends JModelList
 			$baselevel = (int) $cat_tbl->level;
 			$q->where('ca.lft >= '.(int) $lft);
 			$q->where('ca.rgt <= '.(int) $rgt);
+		}
+		
+		if ($cfg->continued) {
+			$q->select("ceug.ug_name AS UserGroup");
+			$q->join('LEFT', '#__ce_usergroup as ceg ON s.mstat_user = ceg.userg_user');
+			$q->join('LEFT', '#__ce_ugroups as ceug ON ceg.userg_group = ceug.ug_id');
+			// Filter by user group.
+			if ($ugroup = $this->getState('filter.group')) {
+				$q->where('ceg.userg_group = '.(int) $ugroup);
+			}
 		}
 		
 		$orderCol = $this->state->get('list.ordering');
@@ -107,6 +144,15 @@ class MStatModelMStat extends JModelList
 		$this->cache[$store] = $items;
 		
 		return $this->cache[$store];
+	}
+	
+	public function getUserGroups() {
+		$q  = 'SELECT ug.ug_name as text,ug.ug_id as value FROM #__ce_ugroups as ug';
+		$q .= ' ORDER BY ug.ug_name';
+		$this->_db->setQuery($q);
+		$glist = $this->_db->loadObjectList();
+		$glist[]->text='-- All --';
+		return $glist;
 	}
 
 	

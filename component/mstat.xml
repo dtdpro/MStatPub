@@ -9,7 +9,7 @@
 	<copyright>2008-2012</copyright>
 	<license>GPL v2</license>
 	<!--  The version string is recorded in the components table -->
-	<version>1.1.2</version>
+	<version>1.2.0</version>
 	<!-- The description is optional and defaults to the name -->
 	<description>Stats for com_content</description>
 
